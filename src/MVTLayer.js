@@ -1,9 +1,11 @@
 /*
- *  Created by Jesús Barrio on 04/2021
+ *  Created by Jesï¿½s Barrio on 04/2021
  */
 
+import { MVTFeature } from './MVTFeature'
+
 class MVTLayer {
-    constructor(options) {
+    constructor (options) {
         this._lineClickTolerance = 2;
         this._getIDForLayerFeature = options.getIDForLayerFeature;
         this.style = options.style;
@@ -26,7 +28,7 @@ class MVTLayer {
         this.drawTile(tileContext);
     }
 
-    _parseVectorTileFeature(mVTSource, vectorTileFeature, tileContext, i) {
+    _parseVectorTileFeature (mVTSource, vectorTileFeature, tileContext, i) {
         if (this._filter && typeof this._filter === 'function') {
             if (this._filter(vectorTileFeature, tileContext) === false) {
                 return;
@@ -77,14 +79,14 @@ class MVTLayer {
         return this._canvasAndMVTFeatures[id].canvas;
     }
 
-    getStyle(feature) {
+    getStyle (feature) {
         if (typeof this.style === 'function') {
             return this.style(feature);
         }
         return this.style;
     }
 
-    setStyle(style) {
+    setStyle (style) {
         this.style = style;
         for (var featureId in this._mVTFeatures) {
             this._mVTFeatures[featureId].setStyle(style);
@@ -97,7 +99,7 @@ class MVTLayer {
         }
     }
 
-    setFilter(filter) {
+    setFilter (filter) {
         this._filter = filter;
     }
 
@@ -190,3 +192,5 @@ class MVTLayer {
         }
     }
 };
+
+export { MVTLayer }

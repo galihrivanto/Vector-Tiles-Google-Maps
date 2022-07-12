@@ -1,9 +1,9 @@
 /*
- *  Created by Jesús Barrio on 04/2021
+ *  Created by Jesï¿½s Barrio on 04/2021
  */
 
 class MVTFeature {
-    constructor(options) {
+    constructor (options) {
         this.mVTSource = options.mVTSource;
         this.selected = options.selected;
         this.featureId = options.featureId;
@@ -19,7 +19,7 @@ class MVTFeature {
         }
     }
 
-    addTileFeature(vectorTileFeature, tileContext) {
+    addTileFeature (vectorTileFeature, tileContext) {
         this.tiles[tileContext.id] = {
             vectorTileFeature: vectorTileFeature,
             divisor: vectorTileFeature.extent / tileContext.tileSize,
@@ -28,7 +28,7 @@ class MVTFeature {
         };
     }
 
-    getTiles() {
+    getTiles () {
         return this.tiles;
     }
 
@@ -40,7 +40,7 @@ class MVTFeature {
         this.style = style;
     }
 
-    redrawTiles() {
+    redrawTiles () {
         var zoom = this.mVTSource.map.getZoom();
         for (var id in this.tiles) {
             this.mVTSource.deleteTileDrawn(id);
@@ -51,7 +51,7 @@ class MVTFeature {
         }
     }
 
-    toggle() {
+    toggle () {
         if (this.selected) {
             this.deselect();
         } else {
@@ -59,23 +59,23 @@ class MVTFeature {
         }
     }
 
-    select() {
+    select () {
         this.selected = true;
         this.mVTSource.featureSelected(this);
         this.redrawTiles();
     }
 
-    deselect() {
+    deselect () {
         this.selected = false;
         this.mVTSource.featureDeselected(this);
         this.redrawTiles();
     }
 
-    setSelected(selected) {
+    setSelected (selected) {
         this.selected = selected;
     }
 
-    draw(tileContext) {
+    draw (tileContext) {
         var tile = this.tiles[tileContext.id];
         var style = this.style;
         if (this.selected && this.style.selected) {
@@ -151,7 +151,7 @@ class MVTFeature {
         }        
     }
 
-    getPaths(tileContext) {
+    getPaths (tileContext) {
         var paths = [];
         var tile = this.tiles[tileContext.id];
         var coordinates = tile.vectorTileFeature.coordinates;
@@ -192,7 +192,7 @@ class MVTFeature {
         return point;
     }
 
-    _getOverzoomedPoint(point, tileContext) {
+    _getOverzoomedPoint (point, tileContext) {
         var parentTile = this.mVTSource.getTileObject(tileContext.parentId);
         var currentTile = this.mVTSource.getTileObject(tileContext.id);
         var zoomDistance = currentTile.zoom - parentTile.zoom;
@@ -221,3 +221,5 @@ class MVTFeature {
         return context2d.isPointInPath(paths2d, point.x, point.y)       
     }
 }
+
+export { MVTFeature }
