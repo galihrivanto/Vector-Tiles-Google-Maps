@@ -1,4 +1,5 @@
-﻿
+﻿[Original Work by **Jesús Barrio**](https://github.com/techjb/Vector-Tiles-Google-Maps)
+
 <!-- TABLE OF CONTENTS -->
 <details open="open">
   <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
@@ -26,13 +27,11 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
 [![Product Name Screen Shot][product-screenshot]](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/styles-feature.html)
-
 
 Vector Tiles Google Maps is a JavaScript library to render vector tiles in Google Maps.
 
@@ -42,29 +41,29 @@ Further work would be to load [Mapxbox GL Styles](https://docs.mapbox.com/mapbox
 
 ### Built With
 
-* [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/overview?)
-* [Mapbox vector tiles](https://github.com/mapbox/vector-tile-js)
-* [Protocol Buffers](https://github.com/protocolbuffers/protobuf)
-* JavaScript
-
+- [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/overview?)
+- [Mapbox vector tiles](https://github.com/mapbox/vector-tile-js)
+- [Protocol Buffers](https://github.com/protocolbuffers/protobuf)
+- JavaScript
 
 <!-- DEMO EXAMPLES -->
+
 ## Examples
 
-* [Basic](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/basic.html) - Basic loading vector tiles with debug enabled.
-* [Cache](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/cache.html) - Cache enabled.
-* [Click](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/click.html) - Click to select one or multiple features.
-* [Hover](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/hover.html) - On mouse hover event.
-* [Preselected features](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/preselected-features.html) - Set features as selected before loading.
-* [Filter](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/filter.html) - Filter features by it properties.
-* [Layers](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/layers.html) - Add remove vector tiles layers.
-* [Styles](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/styles.html) - Change style dynamically.
-* [Styles feature](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/styles-feature.html) - Style based on feature properties.
-* [Style filter and layer](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/style-filter-layer.html) - Update the style, filter and visible layers simultaneously.
-* [Point, linestring and polygon](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/point-linestring-polygon.html) - Show all type of geometries.
-
+- [Basic](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/basic.html) - Basic loading vector tiles with debug enabled.
+- [Cache](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/cache.html) - Cache enabled.
+- [Click](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/click.html) - Click to select one or multiple features.
+- [Hover](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/hover.html) - On mouse hover event.
+- [Preselected features](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/preselected-features.html) - Set features as selected before loading.
+- [Filter](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/filter.html) - Filter features by it properties.
+- [Layers](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/layers.html) - Add remove vector tiles layers.
+- [Styles](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/styles.html) - Change style dynamically.
+- [Styles feature](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/styles-feature.html) - Style based on feature properties.
+- [Style filter and layer](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/style-filter-layer.html) - Update the style, filter and visible layers simultaneously.
+- [Point, linestring and polygon](https://techjb.github.io/Vector-Tiles-Google-Maps/examples/point-linestring-polygon.html) - Show all type of geometries.
 
 <!-- INSTALATION -->
+
 ## Installation
 
 1. Clone the repo
@@ -77,20 +76,22 @@ Further work would be to load [Mapxbox GL Styles](https://docs.mapbox.com/mapbox
    ```
 3. Get your own API Key for the [Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/get-api-key) and replace it in all the provided examples
    ```html
-   <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY" defer></script>
+   <script
+     src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"
+     defer
+   ></script>
    ```
 
-
 <!-- USAGE EXAMPLES -->
+
 ## Usage
 
-Create the `MVTSource` object and then insert it as a `overlayMapType`. 
+Create the `MVTSource` object and then insert it as a `overlayMapType`.
 Provide the vector tiles server url in the options object.
-
 
 ```js
 var options = {
-    url: "http://your_vector_tiles_url/{z}/{x}/{y}.pbf"
+  url: 'http://your_vector_tiles_url/{z}/{x}/{y}.pbf'
 };
 
 var mvtSource = new MVTSource(map, options);
@@ -99,53 +100,56 @@ map.overlayMapTypes.insertAt(0, mvtSource);
 
 ### Recommendations
 
-* Insert the `MVTSource` after tiles have been loaded for the first time 
-to avoid duplicate invocation to `GetTile()`. It is documented in [this issue tracker](https://issuetracker.google.com/issues/73335429).
+- Insert the `MVTSource` after tiles have been loaded for the first time
+  to avoid duplicate invocation to `GetTile()`. It is documented in [this issue tracker](https://issuetracker.google.com/issues/73335429).
 
 ```js
- google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
-    map.overlayMapTypes.insertAt(0, mvtSource);
+google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
+  map.overlayMapTypes.insertAt(0, mvtSource);
 });
 ```
 
-* If you need to set style based on feature property or trigger `onClick` or `onMouseHover` event, 
-set the property `getIDForLayerFeature` option with the function that returns the unique id for each feature.
+- If you need to set style based on feature property or trigger `onClick` or `onMouseHover` event,
+  set the property `getIDForLayerFeature` option with the function that returns the unique id for each feature.
 
 ```js
-var options = {    
-    getIDForLayerFeature: function(feature) {
-        return feature.properties.id;
-    }
+var options = {
+  getIDForLayerFeature: function (feature) {
+    return feature.properties.id;
+  }
 };
 ```
 
-* Enable cache for better performance and smooth flow.
+- Enable cache for better performance and smooth flow.
+
 ```js
-var options = {    
-    cache: true
+var options = {
+  cache: true
 };
 ```
 
-* Set the `sourceMaxZoom` option to enable [overzoom](https://docs.mapbox.com/help/glossary/overzoom/).
+- Set the `sourceMaxZoom` option to enable [overzoom](https://docs.mapbox.com/help/glossary/overzoom/).
+
 ```js
-var options = {    
-    sourceMaxZoom: 14
+var options = {
+  sourceMaxZoom: 14
 };
 ```
-
 
 <!-- DOCUMENTATION -->
+
 ## Documentation
 
 See [documentation](https://github.com/techjb/Vector-Tiles-Google-Maps/blob/master/DOCUMENTATION.md) for the contructor options and public methods.
 
 <!-- ROADMAP -->
+
 ## Roadmap
 
 See the [open issues](https://github.com/techjb/Vector-Tiles-Google-Maps/issues) for a list of proposed features (and known issues).
 
-
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -157,23 +161,24 @@ Contributions are what make the open source community such an amazing place to b
 5. Open a Pull Request
 
 <!-- LICENSE -->
+
 ## License
 
 See [license](https://github.com/techjb/Vector-Tiles-Google-Maps/blob/master/LICENSE.txt) for more information.
 
-
 <!-- CONTACT -->
+
 ## Contact
 
 Jesús Barrio - [@techjb](https://twitter.com/techjb)
 
 Project Link: [https://github.com/techjb/Vector-Tiles-Google-Maps](https://github.com/techjb/Vector-Tiles-Google-Maps)
 
-
 <!-- ACKNOWLEDGEMENTS -->
+
 ## Acknowledgements
 
-* The authors of the library [Leaflet.MapboxVectorTile](https://github.com/SpatialServer/Leaflet.MapboxVectorTile) witch has been used as a start point for this development.
+- The authors of the library [Leaflet.MapboxVectorTile](https://github.com/SpatialServer/Leaflet.MapboxVectorTile) witch has been used as a start point for this development.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->

@@ -1,9 +1,11 @@
 /*
- *  Created by Jesús Barrio on 04/2021
+ *  Created by Jesï¿½s Barrio on 04/2021
  */
 
+import { MVTFeature } from './MVTFeature'
+
 class MVTLayer {
-    constructor(options) {
+    constructor (options) {
         this._lineClickTolerance = 2;
         this._getIDForLayerFeature = options.getIDForLayerFeature;
         this.style = options.style;
@@ -13,7 +15,7 @@ class MVTLayer {
         this._features = [];
     }
 
-    parseVectorTileFeatures(mVTSource, vectorTileFeatures, tileContext) {
+    parseVectorTileFeatures (mVTSource, vectorTileFeatures, tileContext) {
         this._canvasAndFeatures[tileContext.id] = {
             canvas: tileContext.canvas,
             features: []
@@ -25,7 +27,7 @@ class MVTLayer {
         this.drawTile(tileContext);
     }
 
-    _parseVectorTileFeature(mVTSource, vectorTileFeature, tileContext, i) {
+    _parseVectorTileFeature (mVTSource, vectorTileFeature, tileContext, i) {
         if (this._filter && typeof this._filter === 'function') {
             if (this._filter(vectorTileFeature, tileContext) === false) {
                 return;
@@ -54,7 +56,7 @@ class MVTLayer {
         this._canvasAndFeatures[tileContext.id].features.push(mVTFeature);
     }
 
-    drawTile(tileContext) {
+    drawTile (tileContext) {
         var features = this._canvasAndFeatures[tileContext.id].features;
         if (!features) return;
         var selectedFeatures = [];
@@ -71,35 +73,35 @@ class MVTLayer {
         }
     }
 
-    getCanvas(id) {
+    getCanvas (id) {
         return this._canvasAndFeatures[id].canvas;
     }
 
-    getStyle(feature) {
+    getStyle (feature) {
         if (typeof this.style === 'function') {
             return this.style(feature);
         }
         return this.style;
     }
 
-    setStyle(style) {
+    setStyle (style) {
         this.style = style;
         for (var featureId in this._features) {
             this._features[featureId].setStyle(style);
         }
     }
 
-    setSelected(featureId) {
+    setSelected (featureId) {
         if (this._features[featureId] !== undefined) {
             this._features[featureId].select();
         }
     }
 
-    setFilter(filter) {
+    setFilter (filter) {
         this._filter = filter;
     }
 
-    handleClickEvent(event) {
+    handleClickEvent (event) {
         var canvasAndFeatures = this._canvasAndFeatures[event.tileContext.id];
         if (!canvasAndFeatures) return event;
         var canvas = canvasAndFeatures.canvas;
@@ -112,15 +114,15 @@ class MVTLayer {
         return event;
     }
 
-    _handleClickGetFeature(event, features) {
+    _handleClickGetFeature (event, features) {
         var minDistance = Number.POSITIVE_INFINITY;
         var selectedFeature = null;
-        
+
         for (var i = features.length - 1; i >= 0; i--) {
             var feature = features[i];
-            var paths = feature.getPaths(event.tileContext);            
+            var paths = feature.getPaths(event.tileContext);
 
-            for (var j = paths.length - 1; j >= 0; j--) {                
+            for (var j = paths.length - 1; j >= 0; j--) {
                 var path = paths[j];
                 switch (feature.type) {
                     case 1: // Point
@@ -153,3 +155,5 @@ class MVTLayer {
         return selectedFeature;
     }
 };
+
+export { MVTLayer }

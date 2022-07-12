@@ -1,9 +1,9 @@
 /*
- *  Created by Jesús Barrio on 04/2021
+ *  Created by Jesï¿½s Barrio on 04/2021
  */
 
 class MVTFeature {
-    constructor(options) {
+    constructor (options) {
         this.mVTSource = options.mVTSource;
         this.selected = options.selected;
         this.featureId = options.featureId;
@@ -18,22 +18,22 @@ class MVTFeature {
         }
     }
 
-    addTileFeature(vectorTileFeature, tileContext) {
+    addTileFeature (vectorTileFeature, tileContext) {
         this.tiles[tileContext.id] = {
             vectorTileFeature: vectorTileFeature,
             divisor: vectorTileFeature.extent / tileContext.tileSize
         };
     }
 
-    getTiles() {
+    getTiles () {
         return this.tiles;
     }
 
-    setStyle(style) {
+    setStyle (style) {
         this.style = style;
     }
 
-    redrawTiles() {
+    redrawTiles () {
         var zoom = this.mVTSource.map.getZoom();
         for (var id in this.tiles) {
             this.mVTSource.deleteTileDrawn(id);
@@ -44,7 +44,7 @@ class MVTFeature {
         }
     }
 
-    toggle() {
+    toggle () {
         if (this.selected) {
             this.deselect();
         } else {
@@ -52,23 +52,23 @@ class MVTFeature {
         }
     }
 
-    select() {
+    select () {
         this.selected = true;
         this.mVTSource.featureSelected(this);
         this.redrawTiles();
     }
 
-    deselect() {
+    deselect () {
         this.selected = false;
         this.mVTSource.featureDeselected(this);
         this.redrawTiles();
     }
 
-    setSelected(selected) {
+    setSelected (selected) {
         this.selected = selected;
     }
 
-    draw(tileContext) {
+    draw (tileContext) {
         var tile = this.tiles[tileContext.id];
         var style = this.style;
         if (this.selected && this.style.selected) {
@@ -89,7 +89,7 @@ class MVTFeature {
         }
     }
 
-    _drawPoint(tileContext, tile, style) {
+    _drawPoint (tileContext, tile, style) {
         var context2d = this._getContext2d(tileContext.canvas, style);
         var radius = style.radius || 3;
         context2d.beginPath();
@@ -101,13 +101,13 @@ class MVTFeature {
         context2d.stroke();
     }
 
-    _drawLineString(tileContext, tile, style) {
+    _drawLineString (tileContext, tile, style) {
         var context2d = this._getContext2d(tileContext.canvas, style);
         this._drawCoordinates(tileContext, context2d, tile);
         context2d.stroke();
     }
 
-    _drawPolygon(tileContext, tile, style) {
+    _drawPolygon (tileContext, tile, style) {
         var context2d = this._getContext2d(tileContext.canvas, style);
         this._drawCoordinates(tileContext, context2d, tile);
         context2d.closePath();
@@ -120,7 +120,7 @@ class MVTFeature {
         }
     }
 
-    _drawCoordinates(tileContext, context2d, tile) {
+    _drawCoordinates (tileContext, context2d, tile) {
         context2d.beginPath();
         var coordinates = tile.vectorTileFeature.coordinates;
 
@@ -134,7 +134,7 @@ class MVTFeature {
         }
     }
 
-    getPaths(tileContext) {
+    getPaths (tileContext) {
         var paths = [];
         var tile = this.tiles[tileContext.id];
         var coordinates = tile.vectorTileFeature.coordinates;
@@ -152,7 +152,7 @@ class MVTFeature {
         return paths;
     }
 
-    _getContext2d(canvas, style) {
+    _getContext2d (canvas, style) {
         var context2d = canvas.getContext('2d');
         for (var key in style) {
             if (key === 'selected') {
@@ -163,7 +163,7 @@ class MVTFeature {
         return context2d;
     }
 
-    _getPoint(coords, tileContext, divisor) {
+    _getPoint (coords, tileContext, divisor) {
         var point = {
             x: coords.x / divisor,
             y: coords.y / divisor
@@ -175,7 +175,7 @@ class MVTFeature {
         return point;
     }
 
-    _getOverzoomedPoint(point, tileContext) {
+    _getOverzoomedPoint (point, tileContext) {
         var parentTile = this.mVTSource.getTileObject(tileContext.parentId);
         var currentTile = this.mVTSource.getTileObject(tileContext.id);
         var zoomDistance = currentTile.zoom - parentTile.zoom;
@@ -194,3 +194,5 @@ class MVTFeature {
         return point;
     }
 }
+
+export { MVTFeature }
