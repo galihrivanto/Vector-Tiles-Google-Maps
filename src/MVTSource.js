@@ -9,6 +9,10 @@ import { MVTLayer } from './MVTLayer'
 class MVTSource {
     constructor (map, options) {
         var self = this;
+        
+        // set id for further reference
+        this.id = options.id
+
         this.map = map;
         this._url = options.url || ""; //Url TO Vector Tile Source,
         this._sourceMaxZoom = options.sourceMaxZoom || false; // Source maxzoom to enable overzoom
