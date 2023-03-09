@@ -59,6 +59,7 @@ class MVTSource {
             }
             return style;
         };
+        this._customDraw = options.customDraw || false;
 
         this.mVTLayers = [];  //Keep a list of the layers contained in the PBFs        
         this._tilesDrawn = []; //  List of tiles drawn  (when cache enabled)
@@ -250,7 +251,8 @@ class MVTSource {
             getIDForLayerFeature: this.getIDForLayerFeature,
             filter: this._filter,
             style: this.style,
-            name: key
+            name: key,
+            customDraw: this._customDraw
         };
         return new MVTLayer(options);
     }
@@ -290,12 +292,28 @@ class MVTSource {
             mouseHover: mouseHover,
             setSelected: options.setSelected || false,
             toggleSelection: (options.toggleSelection === undefined || options.toggleSelection),
-            limitToFirstVisibleLayer: options.limitToFirstVisibleLayer || false
+            limitToFirstVisibleLayer: options.limitToFirstVisibleLayer || false,
+            delay: options.delay || 0
         }
     }
 
     _mouseEvent (event, callbackFunction, options) {
         if (!event.pixel || !event.latLng) return;
+        
+        if (options.delay == 0) {
+            return this._mouseEventContinue(event, callbackFunction, options);
+        }
+
+        this.event = event;
+        var me = this;
+        setTimeout(function () {
+            if (event != me.event) return;            
+            me._mouseEventContinue(me.event, callbackFunction, options);
+        }, options.delay, event);
+        
+       
+    }
+    _mouseEventContinue(event, callbackFunction, options) {
         callbackFunction = callbackFunction || function () { };
         var limitToFirstVisibleLayer = options.limitToFirstVisibleLayer || false;
         var zoom = this.map.getZoom();
@@ -313,7 +331,7 @@ class MVTSource {
             var key = clickableLayers[i];
             var layer = this.mVTLayers[key];
             if (layer) {
-                var event = layer.handleClickEvent(event);
+                var event = layer.handleClickEvent(event, this);
                 this._mouseSelectedFeature(event, callbackFunction, options);
                 if (limitToFirstVisibleLayer && event.feature) {
                     break;
@@ -408,7 +426,20 @@ class MVTSource {
         return selectedFeatures;
     }
 
-    setFilter (filter, redrawTiles) {
+    getSelectedFeaturesInTile(tileContextId) {
+        var selectedFeatures = [];
+        for (var featureId in this._selectedFeatures) {
+            var selectedFeature = this._selectedFeatures[featureId];
+            for (var tile in selectedFeature.tiles) {
+                if (tile == tileContextId) {
+                    selectedFeatures.push(selectedFeature);
+                }
+            }
+        }
+        return selectedFeatures;
+    }
+
+    setFilter(filter, redrawTiles) {
         redrawTiles = (redrawTiles === undefined || redrawTiles);
         this._filter = filter;
         for (var key in this.mVTLayers) {

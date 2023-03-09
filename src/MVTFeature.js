@@ -12,6 +12,7 @@ class MVTFeature {
         this.type = options.vectorTileFeature.type;
         this.properties = options.vectorTileFeature.properties;
         this.addTileFeature(options.vectorTileFeature, options.tileContext);
+        this._draw = options.customDraw || this.defaultDraw;        
 
         if (this.selected) {
             this.select();
@@ -21,7 +22,9 @@ class MVTFeature {
     addTileFeature (vectorTileFeature, tileContext) {
         this.tiles[tileContext.id] = {
             vectorTileFeature: vectorTileFeature,
-            divisor: vectorTileFeature.extent / tileContext.tileSize
+            divisor: vectorTileFeature.extent / tileContext.tileSize,
+            context2d: false,
+            paths2d: false
         };
     }
 
@@ -29,7 +32,11 @@ class MVTFeature {
         return this.tiles;
     }
 
-    setStyle (style) {
+    getTile(tileContext) {
+        return this.tiles[tileContext.id];
+    }
+
+    setStyle(style) {
         this.style = style;
     }
 
@@ -74,64 +81,74 @@ class MVTFeature {
         if (this.selected && this.style.selected) {
             style = this.style.selected;
         }
+
+        this._draw(tileContext, tile, style, this);
+    }
+
+    defaultDraw(tileContext, tile, style) {
         switch (this.type) {
             case 1: //Point
-                this._drawPoint(tileContext, tile, style);
+                this.drawPoint(tileContext, tile, style);
                 break;
 
             case 2: //LineString
-                this._drawLineString(tileContext, tile, style);
+                this.drawLineString(tileContext, tile, style);
                 break;
 
             case 3: //Polygon
-                this._drawPolygon(tileContext, tile, style);
+                this.drawPolygon(tileContext, tile, style);
                 break;
         }
     }
 
-    _drawPoint (tileContext, tile, style) {
-        var context2d = this._getContext2d(tileContext.canvas, style);
-        var radius = style.radius || 3;
-        context2d.beginPath();
+    drawPoint(tileContext, tile, style) {
         var coordinates = tile.vectorTileFeature.coordinates[0][0];
-        var point = this._getPoint(coordinates, tileContext, tile.divisor);
+        var point = this.getPoint(coordinates, tileContext, tile.divisor);
+        var radius = style.radius || 3;
+        var context2d = this.getContext2d(tileContext.canvas, style);
+        context2d.beginPath();
         context2d.arc(point.x, point.y, radius, 0, Math.PI * 2);
         context2d.closePath();
         context2d.fill();
         context2d.stroke();
     }
 
-    _drawLineString (tileContext, tile, style) {
-        var context2d = this._getContext2d(tileContext.canvas, style);
-        this._drawCoordinates(tileContext, context2d, tile);
-        context2d.stroke();
+    drawLineString(tileContext, tile, style) {
+        tile.context2d = this.getContext2d(tileContext.canvas, style);
+        this.drawCoordinates(tileContext, tile);
+        tile.context2d.stroke(tile.paths2d);
     }
 
-    _drawPolygon (tileContext, tile, style) {
-        var context2d = this._getContext2d(tileContext.canvas, style);
-        this._drawCoordinates(tileContext, context2d, tile);
-        context2d.closePath();
+    drawPolygon(tileContext, tile, style) {
+        tile.context2d = this.getContext2d(tileContext.canvas, style);
+        this.drawCoordinates(tileContext, tile);
+        tile.paths2d.closePath();
 
         if (style.fillStyle) {
-            context2d.fill();
+            tile.context2d.fill(tile.paths2d);
         }
         if (style.strokeStyle) {
-            context2d.stroke();
+            tile.context2d.stroke(tile.paths2d);
         }
     }
 
-    _drawCoordinates (tileContext, context2d, tile) {
-        context2d.beginPath();
+    drawCoordinates(tileContext, tile) {
         var coordinates = tile.vectorTileFeature.coordinates;
-
+        tile.paths2d = new Path2D();        
         for (var i = 0, length1 = coordinates.length; i < length1; i++) {
             var coordinate = coordinates[i];
+            let path2 = new Path2D();
             for (var j = 0, length2 = coordinate.length; j < length2; j++) {
-                var method = (j === 0 ? 'move' : 'line') + 'To';
-                var point = this._getPoint(coordinate[j], tileContext, tile.divisor);
-                context2d[method](point.x, point.y);
+                var point = this.getPoint(coordinate[j], tileContext, tile.divisor);
+                if (j == 0) {
+                    path2.moveTo(point.x, point.y);
+                }
+                else {
+                    path2.lineTo(point.x, point.y);
+                }                
             }
-        }
+            tile.paths2d.addPath(path2);
+        }        
     }
 
     getPaths (tileContext) {
@@ -142,7 +159,7 @@ class MVTFeature {
             var path = [];
             var coordinate = coordinates[i];
             for (var j = 0, length2 = coordinate.length; j < length2; j++) {
-                var point = this._getPoint(coordinate[j], tileContext, tile.divisor);
+                var point = this.getPoint(coordinate[j], tileContext, tile.divisor);
                 path.push(point);
             }
             if (path.length > 0) {
@@ -152,7 +169,7 @@ class MVTFeature {
         return paths;
     }
 
-    _getContext2d (canvas, style) {
+    getContext2d(canvas, style) {
         var context2d = canvas.getContext('2d');
         for (var key in style) {
             if (key === 'selected') {
@@ -163,7 +180,7 @@ class MVTFeature {
         return context2d;
     }
 
-    _getPoint (coords, tileContext, divisor) {
+    getPoint(coords, tileContext, divisor) {
         var point = {
             x: coords.x / divisor,
             y: coords.y / divisor
@@ -192,6 +209,16 @@ class MVTFeature {
         point.y = yScale - (ytileOffset * tileContext.tileSize);
 
         return point;
+    }
+
+    isPointInPath(point, tileContext) {
+        var tile = this.getTile(tileContext);
+        var context2d = tile.context2d;
+        var paths2d = tile.paths2d;
+        if (!context2d || !paths2d) {
+            return false;
+        }
+        return context2d.isPointInPath(paths2d, point.x, point.y)       
     }
 }
 
